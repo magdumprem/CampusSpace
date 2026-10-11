@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CampusSpace | Smart Campus Portal</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <div class="logo">
+            <span class="logo-icon">C</span>
+            <span>CampusSpace</span>
+        </div>
+
+        <nav class="nav-links">
+            <a href="#dashboard" class="active">Dashboard</a>
+            <a href="#spaces">Explore Spaces</a>
+        </nav>
+
+        <div class="nav-right">
+            <span class="status-dot"></span>
+            <span class="campus-label">Campus Portal</span>
+        </div>
+    </header>
+
+
+    <!-- Main Dashboard -->
+    <main class="container" id="dashboard">
+
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <div>
+                <p class="eyebrow">CAMPUS RESOURCE MANAGEMENT</p>
+
+                <h1>Find your space.</h1>
+
+                <p class="welcome-description">
+                    Discover available classrooms, labs, and study spaces
+                    across your campus.
+                </p>
+            </div>
+
+            <div class="date-card">
+                <span class="date-icon">◷</span>
+
+                <div>
+                    <p class="date-title">Campus availability</p>
+                    <p class="date-subtitle">Find your next available space</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Statistics Cards -->
+        <section class="stats-grid">
+
+            <article class="stat-card">
+                <div class="stat-heading">
+                    <span>Total Spaces</span>
+                    <span class="stat-icon purple">▦</span>
+                </div>
+
+                <h2 id="totalSpaces">6</h2>
+                <p>Across campus</p>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-heading">
+                    <span>Available Now</span>
+                    <span class="stat-icon green">✓</span>
+                </div>
+
+                <h2 id="availableSpaces">4</h2>
+                <p>Ready to use</p>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-heading">
+                    <span>Total Capacity</span>
+                    <span class="stat-icon blue">♙</span>
+                </div>
+
+                <h2 id="totalCapacity">216</h2>
+                <p>Seats across listed spaces</p>
+            </article>
+        </section>
+
+
+        <!-- Search and Filters -->
+        <section class="spaces-section" id="spaces">
+
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">DISCOVER YOUR CAMPUS</p>
+                    <h2>Explore spaces</h2>
+                    <p class="section-description">
+                        Find the right environment for your next activity.
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="filter-panel">
+
+                <div class="search-box">
+                    <span class="search-icon">⌕</span>
+
+                    <input
+                        type="search"
+                        id="searchInput"
+                        placeholder="Search rooms, labs, or facilities..."
+                        aria-label="Search campus spaces"
+                    >
+                </div>
+
+                <select id="typeFilter" aria-label="Filter by space type">
+                    <option value="all">All space types</option>
+                    <option value="Classroom">Classrooms</option>
+                    <option value="Laboratory">Laboratories</option>
+                    <option value="Study Room">Study Rooms</option>
+                    <option value="Seminar Hall">Seminar Halls</option>
+                </select>
+
+                <select id="availabilityFilter" aria-label="Filter by availability">
+                    <option value="all">All availability</option>
+                    <option value="available">Available</option>
+                    <option value="occupied">Occupied</option>
+                </select>
+
+            </div>
+
+
+            <!-- Room Cards -->
+            <div class="results-heading">
+                <h3>Campus spaces</h3>
+                <span id="resultsCount">6 spaces</span>
+            </div>
+
+
+            <div class="spaces-grid" id="spacesGrid">
+
+                <!-- Space 1 -->
+                <article class="space-card"
+                    data-name="Computer Science Classroom A101"
+                    data-type="Classroom"
+                    data-status="available">
+
+                    <div class="space-visual visual-classroom">
+                        <span class="visual-icon">▤</span>
+                        <span class="availability available">
+                            <span></span> Available
+                        </span>
+                    </div>
+
+                    <div class="space-content">
+                        <p class="space-type">CLASSROOM</p>
+                        <h3>Classroom A101</h3>
+                        <p class="space-location">Academic Block A · First Floor</p>
+
+                        <div class="space-details">
+                            <span>♙ Capacity</span>
+                            <strong>60 seats</strong>
+                        </div>
+
+                        <div class="space-details">
+                            <span>◷ Status</span>
+                            <strong class="text-available">Available now</strong>
+                        </div>
+
+                        <button class="view-button"
+                            data-room="Classroom A101"
+                            data-capacity="60">
+                            View details <span>→</span>
+                        </button>
+                    </div>
+                </article>
+
+
+                <!-- Space 2 -->
+                <article class="space-card"
+                    data-name="Computer Laboratory Lab 201"
+                    data-type="Laboratory"
+                    data-status="occupied">
+
+                    <div class="space-visual visual-lab">
+                        <span class="visual-icon">⌘</span>
+                        <span class="availability occupied">
+                            <span></span> Occupied
+                        </span>
+                    </div>
+
+                    <div class="space-content">
+                        <p class="space-type">LABORATORY</p>
+                        <h3>Computer Lab 201</h3>
+                        <p class="space-location">Technology Block · Second Floor</p>
+
+                        <div class="space-details">
+                            <span>♙ Capacity</span>
+                            <strong>40 seats</strong>
+                        </div>
+
+                        <div class="space-details">
+                            <span>◷ Status</span>
+                            <strong class="text-occupied">Currently occupied</strong>
+                        </div>
+
+                        <button class="view-button"
+                            data-room="Computer Lab 201"
+                            data-capacity="40">
+                            View details <span>→</span>
+                        </button>
+                    </div>
+                </article>
+
+
+                <!-- Space 3 -->
+                <article class="space-card"
+                    data-name="Central Library Study Room"
+                    data-type="Study Room"
+                    data-status="available">
+
+                    <div class="space-visual visual-library">
+                        <span class="visual-icon">▥</span>
+                        <span class="availability available">
+                            <span></span> Available
+                        </span>
+                    </div>
+
+                    <div class="space-content">
+                        <p class="space-type">STUDY ROOM</p>
+                        <h3>Library Study Room</h3>
+                        <p class="space-location">Central Library · Ground Floor</p>
+
+                        <div class="space-details">
+                            <span>♙ Capacity</span>
+                            <strong>24 seats</strong>
+                        </div>
+
+                        <div class="space-details">
+                            <span>◷ Status</span>
+                            <strong class="text-available">Available now</strong>
+                        </div>
+
+                        <button class="view-button"
+                            data-room="Library Study Room"
+                            data-capacity="24">
+                            View details <span>→</span>
+                        </button>
+                    </div>
+                </article>
+
+
+                <!-- Space 4 -->
+                <article class="space-card"
+                    data-name="Main Seminar Hall"
+                    data-type="Seminar Hall"
+                    data-status="occupied">
+
+                    <div class="space-visual visual-seminar">
+                        <span class="visual-icon">▣</span>
+                        <span class="availability occupied">
+                            <span></span> Occupied
+                        </span>
+                    </div>
+
+                    <div class="space-content">
+                        <p class="space-type">SEMINAR HALL</p>
+                        <h3>Main Seminar Hall</h3>
+                        <p class="space-location">Administrative Block · Ground Floor</p>
+
+                        <div class="space-details">
+                            <span>♙ Capacity</span>
+                            <strong>80 seats</strong>
+                        </div>
+
+                        <div class="space-details">
+                            <span>◷ Status</span>
+                            <strong class="text-occupied">Currently occupied</strong>
+                        </div>
+
+                        <button class="view-button"
+                            data-room="Main Seminar Hall"
+                            data-capacity="80">
+                            View details <span>→</span>
+                        </button>
+                    </div>
+                </article>
+
+
+                <!-- Space 5 -->
+                <article class="space-card"
+                    data-name="Innovation Classroom B202"
+                    data-type="Classroom"
+                    data-status="available">
+
+                    <div class="space-visual visual-innovation">
+                        <span class="visual-icon">✧</span>
+                        <span class="availability available">
+                            <span></span> Available
+                        </span>
+                    </div>
+
+                    <div class="space-content">
+                        <p class="space-type">CLASSROOM</p>
+                        <h3>Classroom B202</h3>
+                        <p class="space-location">Academic Block B · Second Floor</p>
+
+                        <div class="space-details">
+                            <span>♙ Capacity</span>
+                            <strong>32 seats</strong>
+                        </div>
+
+                        <div class="space-details">
+                            <span>◷ Status</span>
+                            <strong class="text-available">Available now</strong>
+                        </div>
+
+                        <button class="view-button"
+                            data-room="Classroom B202"
+                            data-capacity="32">
+                            View details <span>→</span>
+                        </button>
+                    </div>
+                </article>
+
+
+                <!-- Space 6 -->
+                <article class="space-card"
+                    data-name="Research Laboratory Lab 305"
+                    data-type="Laboratory"
+                    data-status="available">
+
+                    <div class="space-visual visual-research">
+                        <span class="visual-icon">⌬</span>
+                        <span class="availability available">
+                            <span></span> Available
+                        </span>
+                    </div>
+
+                    <div class="space-content">
+                        <p class="space-type">LABORATORY</p>
+                        <h3>Research Lab 305</h3>
+                        <p class="space-location">Research Block · Third Floor</p>
+
+                        <div class="space-details">
+                            <span>♙ Capacity</span>
+                            <strong>20 seats</strong>
+                        </div>
+
+                        <div class="space-details">
+                            <span>◷ Status</span>
+                            <strong class="text-available">Available now</strong>
+                        </div>
+
+                        <button class="view-button"
+                            data-room="Research Lab 305"
+                            data-capacity="20">
+                            View details <span>→</span>
+                        </button>
+                    </div>
+                </article>
+
+            </div>
+
+
+            <!-- Empty Search Results -->
+            <div class="empty-state" id="emptyState" hidden>
+                <span>⌕</span>
+                <h3>No spaces found</h3>
+                <p>Try another search term or change your filters.</p>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Room Details Modal -->
+    <div class="modal-overlay" id="roomModal" hidden>
+        <div class="modal-card" role="dialog"
+            aria-modal="true" aria-labelledby="modalTitle">
+
+            <button class="modal-close" id="closeModal"
+                aria-label="Close dialog">&times;</button>
+
+            <p class="eyebrow">SPACE DETAILS</p>
+            <h2 id="modalTitle">Room details</h2>
+
+            <p class="modal-description">
+                Review the basic information for this campus space.
+            </p>
+
+            <div class="modal-detail">
+                <span>Capacity</span>
+                <strong id="modalCapacity">0 seats</strong>
+            </div>
+
+            <div class="modal-detail">
+                <span>Availability</span>
+                <strong id="modalAvailability">Unknown</strong>
+            </div>
+
+            <p class="modal-note">
+                Availability shown here is sample data for the frontend
+                demonstration.
+            </p>
+
+        </div>
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>CampusSpace <span>·</span> Smarter spaces, better campus life.</p>
+        <p>Campus resource allocation portal</p>
+    </footer>
+
+
+<script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</body>
+</html>
