@@ -2,6 +2,10 @@
 // CampusSpace - Frontend Interactions
 // ========================================
 
+// ========================================
+// CampusSpace - Flask API Integration
+// ========================================
+
 document.addEventListener("DOMContentLoaded", function () {
 
     // Get HTML elements
@@ -10,8 +14,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const availabilityFilter = document.getElementById("availabilityFilter");
 
     const spacesGrid = document.getElementById("spacesGrid");
-    const spaceCards = document.querySelectorAll(".space-card");
-
     const resultsCount = document.getElementById("resultsCount");
     const emptyState = document.getElementById("emptyState");
 
@@ -26,56 +28,191 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalCapacity = document.getElementById("modalCapacity");
     const modalAvailability = document.getElementById("modalAvailability");
 
-    // Calculate dashboard statistics from the sample cards
-    function updateStatistics() {
+    let rooms = [];
 
-        let availableCount = 0;
-        let capacityCount = 0;
+    // Choose a card style based on room type
+    function getRoomStyle(type) {
+        const normalizedType = type.toLowerCase();
 
-        spaceCards.forEach(function (card) {
+        if (normalizedType.includes("classroom")) {
+            return {
+                visual: "visual-classroom",
+                icon: "▤",
+                label: "CLASSROOM"
+            };
+        }
 
-            if (card.dataset.status === "available") {
-                availableCount++;
-            }
+        if (normalizedType.includes("lab")) {
+            return {
+                visual: "visual-lab",
+                icon: "⌘",
+                label: "LABORATORY"
+            };
+        }
 
-            const capacityElement = card.querySelector(
-                ".space-details strong"
-            );
+        if (normalizedType.includes("seminar")) {
+            return {
+                visual: "visual-seminar",
+                icon: "▣",
+                label: "SEMINAR HALL"
+            };
+        }
 
-            if (capacityElement) {
-                const capacity = parseInt(capacityElement.textContent, 10);
+        return {
+            visual: "visual-library",
+            icon: "▥",
+            label: type.toUpperCase()
+        };
+    }
 
-                if (!Number.isNaN(capacity)) {
-                    capacityCount += capacity;
-                }
-            }
+    // Create a room card using backend data
+    function createRoomCard(room) {
+        const isAvailable = room.status.toLowerCase() === "available";
+        const statusClass = isAvailable ? "available" : "occupied";
+        const statusText = isAvailable ? "Available" : "Occupied";
+        const style = getRoomStyle(room.type);
+
+        const card = document.createElement("article");
+        card.className = "space-card";
+
+        card.dataset.name = room.name.toLowerCase();
+        card.dataset.type = room.type;
+        card.dataset.status = room.status.toLowerCase();
+
+        const visual = document.createElement("div");
+        visual.className = `space-visual ${style.visual}`;
+
+        const icon = document.createElement("span");
+        icon.className = "visual-icon";
+        icon.textContent = style.icon;
+
+        const badge = document.createElement("span");
+        badge.className = `availability ${statusClass}`;
+
+        const badgeDot = document.createElement("span");
+        badge.appendChild(badgeDot);
+        badge.appendChild(document.createTextNode(` ${statusText}`));
+
+        visual.append(icon, badge);
+
+        const content = document.createElement("div");
+        content.className = "space-content";
+
+        const typeLabel = document.createElement("p");
+        typeLabel.className = "space-type";
+        typeLabel.textContent = style.label;
+
+        const title = document.createElement("h3");
+        title.textContent = room.name;
+
+        const location = document.createElement("p");
+        location.className = "space-location";
+        location.textContent = room.building;
+
+        const capacityRow = document.createElement("div");
+        capacityRow.className = "space-details";
+
+        const capacityLabel = document.createElement("span");
+        capacityLabel.textContent = "♙ Capacity";
+
+        const capacityValue = document.createElement("strong");
+        capacityValue.textContent = `${room.capacity} seats`;
+
+        capacityRow.append(capacityLabel, capacityValue);
+
+        const statusRow = document.createElement("div");
+        statusRow.className = "space-details";
+
+        const statusLabel = document.createElement("span");
+        statusLabel.textContent = "◷ Status";
+
+        const statusValue = document.createElement("strong");
+        statusValue.className = isAvailable
+            ? "text-available"
+            : "text-occupied";
+        statusValue.textContent = isAvailable
+            ? "Available now"
+            : "Currently occupied";
+
+        statusRow.append(statusLabel, statusValue);
+
+        const button = document.createElement("button");
+        button.className = "view-button";
+        button.dataset.roomId = room.id;
+        button.textContent = "View details →";
+
+        button.addEventListener("click", function () {
+            openRoomDetails(room);
         });
 
-        totalSpaces.textContent = spaceCards.length;
+        content.append(
+            typeLabel,
+            title,
+            location,
+            capacityRow,
+            statusRow,
+            button
+        );
+
+        card.append(visual, content);
+
+        return card;
+    }
+
+    // Display rooms received from Flask
+    function renderRooms() {
+        spacesGrid.replaceChildren();
+
+        rooms.forEach(function (room) {
+            spacesGrid.appendChild(createRoomCard(room));
+        });
+
+        updateStatistics();
+        filterSpaces();
+    }
+
+    // Update dashboard statistics
+    function updateStatistics() {
+        const availableCount = rooms.filter(function (room) {
+            return room.status.toLowerCase() === "available";
+        }).length;
+
+        const capacityCount = rooms.reduce(function (total, room) {
+            return total + Number(room.capacity || 0);
+        }, 0);
+
+        totalSpaces.textContent = rooms.length;
         availableSpaces.textContent = availableCount;
         totalCapacity.textContent = capacityCount;
     }
 
-    // Search and filter spaces
+    // Search and filter rooms
     function filterSpaces() {
-
         const searchText = searchInput.value.trim().toLowerCase();
         const selectedType = typeFilter.value;
         const selectedAvailability = availabilityFilter.value;
 
+        const cards = spacesGrid.querySelectorAll(".space-card");
         let visibleCount = 0;
 
-        spaceCards.forEach(function (card) {
-
-            const roomName = card.dataset.name.toLowerCase();
-            const roomType = card.dataset.type;
+        cards.forEach(function (card) {
+            const roomName = card.dataset.name;
+            const roomType = card.dataset.type.toLowerCase();
             const roomStatus = card.dataset.status;
 
             const matchesSearch = roomName.includes(searchText);
 
-            const matchesType =
-                selectedType === "all" ||
-                roomType === selectedType;
+            let matchesType = selectedType === "all";
+
+            if (selectedType !== "all") {
+                const selected = selectedType.toLowerCase();
+
+                if (selected === "laboratory") {
+                    matchesType = roomType.includes("lab");
+                } else {
+                    matchesType = roomType === selected;
+                }
+            }
 
             const matchesAvailability =
                 selectedAvailability === "all" ||
@@ -93,76 +230,86 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Update the result count
         resultsCount.textContent =
-            visibleCount + (visibleCount === 1 ? " space" : " spaces");
+            `${visibleCount} ${visibleCount === 1 ? "space" : "spaces"}`;
 
-        // Show a message when there are no results
         emptyState.hidden = visibleCount !== 0;
-
-        // Hide the card grid when there are no results
         spacesGrid.hidden = visibleCount === 0;
     }
 
-    // Listen for search input changes
-    searchInput.addEventListener("input", filterSpaces);
-
-    // Listen for space type changes
-    typeFilter.addEventListener("change", filterSpaces);
-
-    // Listen for availability changes
-    availabilityFilter.addEventListener("change", filterSpaces);
-
     // Open the room details modal
-    document.querySelectorAll(".view-button").forEach(function (button) {
+    function openRoomDetails(room) {
+        modalTitle.textContent = room.name;
+        modalCapacity.textContent = `${room.capacity} seats`;
 
-        button.addEventListener("click", function () {
+        const isAvailable = room.status.toLowerCase() === "available";
 
-            const roomName = button.dataset.room;
-            const roomCapacity = button.dataset.capacity;
+        modalAvailability.textContent = isAvailable
+            ? "Available now"
+            : "Currently occupied";
 
-            const card = button.closest(".space-card");
-            const roomStatus = card.dataset.status;
+        modalAvailability.style.color = isAvailable
+            ? "#16875d"
+            : "#c94c55";
 
-            modalTitle.textContent = roomName;
-            modalCapacity.textContent = roomCapacity + " seats";
+        roomModal.hidden = false;
+        closeModal.focus();
+    }
 
-            if (roomStatus === "available") {
-                modalAvailability.textContent = "Available now";
-                modalAvailability.style.color = "#16875d";
-            } else {
-                modalAvailability.textContent = "Currently occupied";
-                modalAvailability.style.color = "#c94c55";
-            }
-
-            roomModal.hidden = false;
-            closeModal.focus();
-        });
-    });
-
-    // Close the modal using the close button
+    // Close modal using the close button
     closeModal.addEventListener("click", function () {
         roomModal.hidden = true;
     });
 
-    // Close the modal when clicking outside the dialog
+    // Close modal by clicking the backdrop
     roomModal.addEventListener("click", function (event) {
-
         if (event.target === roomModal) {
             roomModal.hidden = true;
         }
     });
 
-    // Close the modal using the Escape key
+    // Close modal using Escape
     document.addEventListener("keydown", function (event) {
-
         if (event.key === "Escape" && !roomModal.hidden) {
             roomModal.hidden = true;
         }
     });
 
+    // Search and filter listeners
+    searchInput.addEventListener("input", filterSpaces);
+    typeFilter.addEventListener("change", filterSpaces);
+    availabilityFilter.addEventListener("change", filterSpaces);
+
+    // Fetch room data from Flask
+    async function loadRooms() {
+        try {
+            resultsCount.textContent = "Loading spaces...";
+
+            const response = await fetch("/api/rooms");
+
+            if (!response.ok) {
+                throw new Error(`Server returned ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (!Array.isArray(data.rooms)) {
+                throw new Error("The API response does not contain a rooms array.");
+            }
+
+            rooms = data.rooms;
+            renderRooms();
+
+        } catch (error) {
+            console.error("Could not load rooms:", error);
+
+            resultsCount.textContent = "Unable to load spaces";
+            spacesGrid.hidden = true;
+            emptyState.hidden = false;
+        }
+    }
+
     // Initialize the dashboard
-    updateStatistics();
-    filterSpaces();
+    loadRooms();
 
 });

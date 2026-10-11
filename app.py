@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template_string, request
+from flask import Flask, render_template, request
 from rooms import ROOMS
 
 app = Flask(__name__)
@@ -36,6 +36,7 @@ def get_rooms():
 
 @app.route("/")
 def home():
+    return render_template("index.html")
     return render_template_string("""
     <!DOCTYPE html>
     <html lang="en">
