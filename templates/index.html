@@ -1,15 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>CampusSpace | Smart Campus Portal</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-
     <!-- Navigation Bar -->
     <header class="navbar">
         <div class="logo">
@@ -28,17 +27,13 @@
         </div>
     </header>
 
-
     <!-- Main Dashboard -->
     <main class="container" id="dashboard">
-
         <!-- Welcome Section -->
         <section class="welcome-section">
             <div>
                 <p class="eyebrow">CAMPUS RESOURCE MANAGEMENT</p>
-
                 <h1>Find your space.</h1>
-
                 <p class="welcome-description">
                     Discover available classrooms, labs, and study spaces
                     across your campus.
@@ -47,7 +42,6 @@
 
             <div class="date-card">
                 <span class="date-icon">◷</span>
-
                 <div>
                     <p class="date-title">Campus availability</p>
                     <p class="date-subtitle">Find your next available space</p>
@@ -55,16 +49,13 @@
             </div>
         </section>
 
-
         <!-- Statistics Cards -->
         <section class="stats-grid">
-
             <article class="stat-card">
                 <div class="stat-heading">
                     <span>Total Spaces</span>
                     <span class="stat-icon purple">▦</span>
                 </div>
-
                 <h2 id="totalSpaces">6</h2>
                 <p>Across campus</p>
             </article>
@@ -74,7 +65,6 @@
                     <span>Available Now</span>
                     <span class="stat-icon green">✓</span>
                 </div>
-
                 <h2 id="availableSpaces">4</h2>
                 <p>Ready to use</p>
             </article>
@@ -84,16 +74,13 @@
                     <span>Total Capacity</span>
                     <span class="stat-icon blue">♙</span>
                 </div>
-
                 <h2 id="totalCapacity">216</h2>
                 <p>Seats across listed spaces</p>
             </article>
         </section>
 
-
         <!-- Search and Filters -->
         <section class="spaces-section" id="spaces">
-
             <div class="section-heading">
                 <div>
                     <p class="eyebrow">DISCOVER YOUR CAMPUS</p>
@@ -104,12 +91,9 @@
                 </div>
             </div>
 
-
             <div class="filter-panel">
-
                 <div class="search-box">
                     <span class="search-icon">⌕</span>
-
                     <input
                         type="search"
                         id="searchInput"
@@ -131,9 +115,7 @@
                     <option value="available">Available</option>
                     <option value="occupied">Occupied</option>
                 </select>
-
             </div>
-
 
             <!-- Room Cards -->
             <div class="results-heading">
@@ -141,10 +123,7 @@
                 <span id="resultsCount">6 spaces</span>
             </div>
 
-
             <div class="spaces-grid" id="spacesGrid">
-
-                <!-- Space 1 -->
                 <article class="space-card"
                     data-name="Computer Science Classroom A101"
                     data-type="Classroom"
@@ -166,7 +145,6 @@
                             <span>♙ Capacity</span>
                             <strong>60 seats</strong>
                         </div>
-
                         <div class="space-details">
                             <span>◷ Status</span>
                             <strong class="text-available">Available now</strong>
@@ -180,8 +158,6 @@
                     </div>
                 </article>
 
-
-                <!-- Space 2 -->
                 <article class="space-card"
                     data-name="Computer Laboratory Lab 201"
                     data-type="Laboratory"
@@ -203,7 +179,6 @@
                             <span>♙ Capacity</span>
                             <strong>40 seats</strong>
                         </div>
-
                         <div class="space-details">
                             <span>◷ Status</span>
                             <strong class="text-occupied">Currently occupied</strong>
@@ -217,8 +192,6 @@
                     </div>
                 </article>
 
-
-                <!-- Space 3 -->
                 <article class="space-card"
                     data-name="Central Library Study Room"
                     data-type="Study Room"
@@ -240,7 +213,6 @@
                             <span>♙ Capacity</span>
                             <strong>24 seats</strong>
                         </div>
-
                         <div class="space-details">
                             <span>◷ Status</span>
                             <strong class="text-available">Available now</strong>
@@ -254,8 +226,6 @@
                     </div>
                 </article>
 
-
-                <!-- Space 4 -->
                 <article class="space-card"
                     data-name="Main Seminar Hall"
                     data-type="Seminar Hall"
@@ -277,7 +247,6 @@
                             <span>♙ Capacity</span>
                             <strong>80 seats</strong>
                         </div>
-
                         <div class="space-details">
                             <span>◷ Status</span>
                             <strong class="text-occupied">Currently occupied</strong>
@@ -291,8 +260,6 @@
                     </div>
                 </article>
 
-
-                <!-- Space 5 -->
                 <article class="space-card"
                     data-name="Innovation Classroom B202"
                     data-type="Classroom"
@@ -314,7 +281,6 @@
                             <span>♙ Capacity</span>
                             <strong>32 seats</strong>
                         </div>
-
                         <div class="space-details">
                             <span>◷ Status</span>
                             <strong class="text-available">Available now</strong>
@@ -328,8 +294,6 @@
                     </div>
                 </article>
 
-
-                <!-- Space 6 -->
                 <article class="space-card"
                     data-name="Research Laboratory Lab 305"
                     data-type="Laboratory"
@@ -351,7 +315,6 @@
                             <span>♙ Capacity</span>
                             <strong>20 seats</strong>
                         </div>
-
                         <div class="space-details">
                             <span>◷ Status</span>
                             <strong class="text-available">Available now</strong>
@@ -364,9 +327,7 @@
                         </button>
                     </div>
                 </article>
-
             </div>
-
 
             <!-- Empty Search Results -->
             <div class="empty-state" id="emptyState" hidden>
@@ -374,11 +335,8 @@
                 <h3>No spaces found</h3>
                 <p>Try another search term or change your filters.</p>
             </div>
-
         </section>
-
     </main>
-
 
     <!-- Room Details Modal -->
     <div class="modal-overlay" id="roomModal" hidden>
@@ -406,13 +364,83 @@
             </div>
 
             <p class="modal-note">
-                Availability shown here is sample data for the frontend
-                demonstration.
+                Select a room and booking time to request a reservation.
             </p>
 
+            <button type="button" class="view-button" id="openBookingButton">
+                Book This Room <span>→</span>
+            </button>
         </div>
     </div>
 
+<!-- Booking Form Modal -->
+<div class="modal-overlay" id="bookingModal" hidden>
+    <div class="modal-card" role="dialog"
+        aria-modal="true" aria-labelledby="bookingModalTitle">
+
+        <button type="button" class="modal-close" id="closeBookingModal"
+            aria-label="Close booking form">&times;</button>
+
+        <p class="eyebrow">RESERVE A CAMPUS SPACE</p>
+        <h2 id="bookingModalTitle">Book a space</h2>
+
+        <p class="modal-description">
+            Choose a room, date, and time for your reservation.
+        </p>
+
+        <form id="bookingForm">
+            <label for="bookingRoom">Select room</label>
+            <select id="bookingRoom" name="room_id" required>
+                <option value="">Choose a room</option>
+                <option value="1">Classroom A101 — 60 seats</option>
+                <option value="2">Computer Lab L201 — 40 seats</option>
+                <option value="3">Seminar Hall S301 — 100 seats</option>
+            </select>
+
+            <label for="bookingDate">Booking date</label>
+            <input type="date" id="bookingDate" name="date" required>
+
+            <label for="bookingStartTime">Start time</label>
+            <input type="time" id="bookingStartTime"
+                name="start_time" required>
+
+            <label for="bookingEndTime">End time</label>
+            <input type="time" id="bookingEndTime"
+                name="end_time" required>
+
+            <label for="bookedBy">Your name</label>
+            <input type="text" id="bookedBy" name="booked_by"
+                placeholder="Enter your name" maxlength="100" required>
+
+            <button type="submit" class="view-button" id="submitBooking">
+                Confirm Booking <span>→</span>
+            </button>
+
+            <p id="bookingMessage" role="status" aria-live="polite"></p>
+        </form>
+    </div>
+</div>
+
+<!-- My Bookings Section -->
+<section class="spaces-section" id="myBookings">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">YOUR RESERVATIONS</p>
+            <h2>My Bookings</h2>
+            <p class="section-description">
+                View the campus spaces reserved through CampusSpace.
+            </p>
+        </div>
+
+        <button type="button" class="view-button" id="refreshBookings">
+            Refresh bookings <span>↻</span>
+        </button>
+    </div>
+
+    <div id="bookingsList" aria-live="polite">
+        <p>Loading bookings...</p>
+    </div>
+</section>
 
     <!-- Footer -->
     <footer class="footer">
@@ -420,7 +448,6 @@
         <p>Campus resource allocation portal</p>
     </footer>
 
-
-<script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </body>
 </html>
