@@ -26,9 +26,15 @@ def save_bookings(bookings):
         json.dump(bookings, file, indent=2)
 
 
+
 @app.route("/")
 def home():
     return render_template("index.html", rooms=ROOMS)
+
+
+@app.route("/admin")
+def admin():
+    return render_template("admin.html", rooms=ROOMS)
 
 
 @app.route("/api/rooms", methods=["GET"])

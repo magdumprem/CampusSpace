@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusSpace | Admin Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #172033;
+        }
+
+        header {
+            background: #172554;
+            color: white;
+            padding: 24px;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+        }
+
+        header p {
+            margin: 0;
+            color: #cbd5e1;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .card, .panel {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+        }
+
+        .card p {
+            color: #64748b;
+            margin-top: 0;
+        }
+
+        .card h2 {
+            font-size: 32px;
+            margin-bottom: 0;
+        }
+
+        .panel {
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            color: #475569;
+            background: #f8fafc;
+        }
+
+        .message {
+            color: #64748b;
+        }
+
+        .error {
+            color: #b91c1c;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>CampusSpace Admin</h1>
+        <p>Room and booking overview</p>
+    </header>
+
+    <main>
+        <section class="stats">
+            <div class="card">
+                <p>Total Rooms</p>
+                <h2 id="totalRooms">—</h2>
+            </div>
+
+            <div class="card">
+                <p>Total Bookings</p>
+                <h2 id="totalBookings">—</h2>
+            </div>
+
+            <div class="card">
+                <p>Available Rooms</p>
+                <h2 id="availableRooms">—</h2>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Room Overview</h2>
+            <div id="roomsMessage" class="message">Loading rooms...</div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Room</th>
+                        <th>Type</th>
+                        <th>Capacity</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="roomsTable"></tbody>
+            </table>
+        </section>
+
+        <section class="panel">
+            <h2>Booking Overview</h2>
+            <div id="bookingsMessage" class="message">
+                Loading bookings...
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Room</th>
+                        <th>Booked By</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingsTable"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        async function loadDashboard() {
+            try {
+                const [roomsResponse, bookingsResponse] =
+                    await Promise.all([
+                        fetch("/api/rooms"),
+                        fetch("/api/bookings")
+                    ]);
+
+                if (!roomsResponse.ok || !bookingsResponse.ok) {
+                    throw new Error("Unable to load dashboard data.");
+                }
+
+                const roomsData = await roomsResponse.json();
+                const bookingsData = await bookingsResponse.json();
+
+                const rooms = roomsData.rooms;
+                const bookings = bookingsData.bookings;
+
+                if (!Array.isArray(rooms) || !Array.isArray(bookings)) {
+                    throw new Error("Unexpected API response.");
+                }
+
+                document.getElementById("totalRooms").textContent =
+                    rooms.length;
+
+                document.getElementById("totalBookings").textContent =
+                    bookings.length;
+
+                document.getElementById("availableRooms").textContent =
+                    rooms.filter(room =>
+                        String(room.status).toLowerCase() === "available"
+                    ).length;
+
+                const roomsTable = document.getElementById("roomsTable");
+                const bookingsTable =
+                    document.getElementById("bookingsTable");
+
+                roomsTable.replaceChildren();
+                bookingsTable.replaceChildren();
+
+                function addCell(row, value) {
+                    const cell = document.createElement("td");
+                    cell.textContent = value ?? "—";
+                    row.appendChild(cell);
+                }
+
+                rooms.forEach(room => {
+                    const row = document.createElement("tr");
+
+                    addCell(row, room.name);
+                    addCell(row, room.type);
+                    addCell(row, room.capacity);
+                    addCell(row, room.status);
+
+                    roomsTable.appendChild(row);
+                });
+
+                bookings.forEach(booking => {
+                    const row = document.createElement("tr");
+
+                    addCell(row, booking.id);
+                    addCell(row, booking.room_name);
+                    addCell(row, booking.booked_by);
+                    addCell(row, booking.date);
+                    addCell(
+                        row,
+                        `${booking.start_time} - ${booking.end_time}`
+                    );
+
+                    bookingsTable.appendChild(row);
+                });
+
+                document.getElementById("roomsMessage").textContent =
+                    rooms.length ? "" : "No rooms found.";
+
+                document.getElementById("bookingsMessage").textContent =
+                    bookings.length ? "" : "No bookings found.";
+
+            } catch (error) {
+                console.error(error);
+
+                document.getElementById("roomsMessage").textContent =
+                    "Could not load rooms.";
+
+                document.getElementById("bookingsMessage").textContent =
+                    "Could not load bookings.";
+
+                document.getElementById("roomsMessage")
+                    .classList.add("error");
+
+                document.getElementById("bookingsMessage")
+                    .classList.add("error");
+            }
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>
