@@ -1,7 +1,7 @@
 
 from flask import Flask, render_template, request, jsonify
 from rooms import ROOMS
-from datetime import date, time
+from datetime import date, time, datetime
 import json
 import os
 from threading import Lock
@@ -34,7 +34,24 @@ def get_rooms():
     status = request.args.get("status", "").strip().lower()
     min_capacity = request.args.get("min_capacity", type=int)
 
-    filtered_rooms = ROOMS
+    requested_date = request.args.get("date", "").strip()
+    start_time = request.args.get("start_time", "").strip()
+    end_time = request.args.get("end_time", "").strip()
+
+    # Validate status
+    if status and status not in ("available", "occupied"):
+        return jsonify({
+            "error": "Status must be available or occupied."
+        }), 400
+
+    # Date and time must be supplied together
+    slot_values = [requested_date, start_time, end_time]
+    if any(slot_values) and not all(slot_values):
+        return jsonify({
+            "error": "Provide date, start_time, and end_time together."
+        }), 400
+
+    filtered_rooms = list(ROOMS)
 
     if room_type:
         filtered_rooms = [
@@ -42,16 +59,78 @@ def get_rooms():
             if room["type"].lower() == room_type
         ]
 
-    if status:
-        filtered_rooms = [
-            room for room in filtered_rooms
-            if room["status"].lower() == status
-        ]
-
     if min_capacity is not None:
+        if min_capacity < 0:
+            return jsonify({
+                "error": "Minimum capacity cannot be negative."
+            }), 400
+
         filtered_rooms = [
             room for room in filtered_rooms
             if room["capacity"] >= min_capacity
+        ]
+
+    # Filter by requested date and time
+    if all(slot_values):
+        try:
+            datetime.strptime(requested_date, "%Y-%m-%d")
+            start = datetime.strptime(start_time, "%H:%M").time()
+            end = datetime.strptime(end_time, "%H:%M").time()
+
+            if end <= start:
+                return jsonify({
+                    "error": "End time must be later than start time."
+                }), 400
+
+        except ValueError:
+            return jsonify({
+                "error": "Use date YYYY-MM-DD and times HH:MM."
+            }), 400
+
+        with booking_lock:
+            bookings = load_bookings()
+
+        unavailable_room_ids = set()
+
+        for booking in bookings:
+            if booking["date"] != requested_date:
+                continue
+
+            existing_start = datetime.strptime(
+                booking["start_time"], "%H:%M"
+            ).time()
+            existing_end = datetime.strptime(
+                booking["end_time"], "%H:%M"
+            ).time()
+
+            # Two slots overlap if each starts before the other ends
+            if start < existing_end and end > existing_start:
+                unavailable_room_ids.add(int(booking["room_id"]))
+
+        if status == "available":
+            filtered_rooms = [
+                room for room in filtered_rooms
+                if room["id"] not in unavailable_room_ids
+            ]
+
+        elif status == "occupied":
+            filtered_rooms = [
+                room for room in filtered_rooms
+                if room["id"] in unavailable_room_ids
+            ]
+
+        else:
+            # With a time slot, return rooms free during that slot
+            filtered_rooms = [
+                room for room in filtered_rooms
+                if room["id"] not in unavailable_room_ids
+            ]
+
+    elif status:
+        # Without a time slot, use each room's stored status
+        filtered_rooms = [
+            room for room in filtered_rooms
+            if room["status"].lower() == status
         ]
 
     return jsonify({"rooms": filtered_rooms})
@@ -73,23 +152,36 @@ def create_booking():
     end_time = str(data.get("end_time", "")).strip()
     booked_by = str(data.get("booked_by", "")).strip()
 
-    if not all([room_id, booking_date, start_time, end_time, booked_by]):
+    if not all([
+        room_id, booking_date, start_time, end_time, booked_by
+    ]):
         return jsonify({
             "error": "Please provide room, date, start time, end time, and your name."
         }), 400
 
     try:
         room_id = int(room_id)
-        date.fromisoformat(booking_date)
+        parsed_date = date.fromisoformat(booking_date)
         start = time.fromisoformat(start_time)
         end = time.fromisoformat(end_time)
+
+        # Require the exact formats accepted by the API
+        if (
+            parsed_date.isoformat() != booking_date
+            or start.strftime("%H:%M") != start_time
+            or end.strftime("%H:%M") != end_time
+        ):
+            raise ValueError
+
     except (ValueError, TypeError):
         return jsonify({
-            "error": "Invalid room ID, date, or time format."
+            "error": "Use a valid room ID, date YYYY-MM-DD, and times HH:MM."
         }), 400
 
     if booking_date < date.today().isoformat():
-        return jsonify({"error": "You cannot book a past date."}), 400
+        return jsonify({
+            "error": "You cannot book a past date."
+        }), 400
 
     if start >= end:
         return jsonify({
@@ -106,7 +198,7 @@ def create_booking():
 
         for booking in bookings:
             if (
-                booking["room_id"] == room_id
+                int(booking["room_id"]) == room_id
                 and booking["date"] == booking_date
                 and start_time < booking["end_time"]
                 and end_time > booking["start_time"]
@@ -116,7 +208,9 @@ def create_booking():
                 }), 409
 
         new_booking = {
-            "id": max((b["id"] for b in bookings), default=0) + 1,
+            "id": max(
+                (b["id"] for b in bookings), default=0
+            ) + 1,
             "room_id": room_id,
             "room_name": room["name"],
             "date": booking_date,
