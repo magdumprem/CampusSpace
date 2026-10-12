@@ -1,19 +1,13 @@
-
-<<<<<<< HEAD
-from flask import Flask, render_template, request
-=======
-from flask import Flask, render_template, request, jsonify
->>>>>>> origin/main
-from rooms import ROOMS
-from datetime import date, time, datetime
 import json
 import os
-from threading import Lock
+from datetime import datetime
+
+from flask import Flask, render_template, request
+from rooms import ROOMS
 
 app = Flask(__name__)
 
 BOOKINGS_FILE = "bookings.json"
-booking_lock = Lock()
 
 
 def load_bookings():
@@ -29,7 +23,12 @@ def load_bookings():
 
 def save_bookings(bookings):
     with open(BOOKINGS_FILE, "w", encoding="utf-8") as file:
-        json.dump(bookings, file, indent=4)
+        json.dump(bookings, file, indent=2)
+
+
+@app.route("/")
+def home():
+    return render_template("index.html", rooms=ROOMS)
 
 
 @app.route("/api/rooms", methods=["GET"])
@@ -38,24 +37,11 @@ def get_rooms():
     status = request.args.get("status", "").strip().lower()
     min_capacity = request.args.get("min_capacity", type=int)
 
-    requested_date = request.args.get("date", "").strip()
+    date = request.args.get("date", "").strip()
     start_time = request.args.get("start_time", "").strip()
     end_time = request.args.get("end_time", "").strip()
 
-    # Validate status
-    if status and status not in ("available", "occupied"):
-        return jsonify({
-            "error": "Status must be available or occupied."
-        }), 400
-
-    # Date and time must be supplied together
-    slot_values = [requested_date, start_time, end_time]
-    if any(slot_values) and not all(slot_values):
-        return jsonify({
-            "error": "Provide date, start_time, and end_time together."
-        }), 400
-
-    filtered_rooms = list(ROOMS)
+    filtered_rooms = ROOMS
 
     if room_type:
         filtered_rooms = [
@@ -63,268 +49,131 @@ def get_rooms():
             if room["type"].lower() == room_type
         ]
 
-    if min_capacity is not None:
-        if min_capacity < 0:
-            return jsonify({
-                "error": "Minimum capacity cannot be negative."
-            }), 400
-
-        filtered_rooms = [
-            room for room in filtered_rooms
-            if room["capacity"] >= min_capacity
-        ]
-
-    # Filter by requested date and time
-    if all(slot_values):
-        try:
-            datetime.strptime(requested_date, "%Y-%m-%d")
-            start = datetime.strptime(start_time, "%H:%M").time()
-            end = datetime.strptime(end_time, "%H:%M").time()
-
-            if end <= start:
-                return jsonify({
-                    "error": "End time must be later than start time."
-                }), 400
-
-        except ValueError:
-            return jsonify({
-                "error": "Use date YYYY-MM-DD and times HH:MM."
-            }), 400
-
-        with booking_lock:
-            bookings = load_bookings()
-
-        unavailable_room_ids = set()
-
-        for booking in bookings:
-            if booking["date"] != requested_date:
-                continue
-
-            existing_start = datetime.strptime(
-                booking["start_time"], "%H:%M"
-            ).time()
-            existing_end = datetime.strptime(
-                booking["end_time"], "%H:%M"
-            ).time()
-
-            # Two slots overlap if each starts before the other ends
-            if start < existing_end and end > existing_start:
-                unavailable_room_ids.add(int(booking["room_id"]))
-
-        if status == "available":
-            filtered_rooms = [
-                room for room in filtered_rooms
-                if room["id"] not in unavailable_room_ids
-            ]
-
-        elif status == "occupied":
-            filtered_rooms = [
-                room for room in filtered_rooms
-                if room["id"] in unavailable_room_ids
-            ]
-
-        else:
-            # With a time slot, return rooms free during that slot
-            filtered_rooms = [
-                room for room in filtered_rooms
-                if room["id"] not in unavailable_room_ids
-            ]
-
-    elif status:
-        # Without a time slot, use each room's stored status
+    if status:
         filtered_rooms = [
             room for room in filtered_rooms
             if room["status"].lower() == status
         ]
 
-    return jsonify({"rooms": filtered_rooms})
+    if min_capacity is not None:
+        filtered_rooms = [
+            room for room in filtered_rooms
+            if room["capacity"] >= min_capacity
+        ]
+
+    if date and start_time and end_time:
+        bookings = load_bookings()
+
+        filtered_rooms = [
+            room for room in filtered_rooms
+            if not any(
+                booking["room_id"] == room["id"]
+                and booking["date"] == date
+                and start_time < booking["end_time"]
+                and end_time > booking["start_time"]
+                for booking in bookings
+            )
+        ]
+
+    return {"rooms": filtered_rooms}
 
 
 @app.route("/api/bookings", methods=["GET"])
 def get_bookings():
-    with booking_lock:
-        return jsonify({"bookings": load_bookings()})
+    return {"bookings": load_bookings()}
 
 
 @app.route("/api/bookings", methods=["POST"])
 def create_booking():
     data = request.get_json(silent=True) or {}
 
-    room_id = data.get("room_id")
-    booking_date = str(data.get("date", "")).strip()
-    start_time = str(data.get("start_time", "")).strip()
-    end_time = str(data.get("end_time", "")).strip()
-    booked_by = str(data.get("booked_by", "")).strip()
+    required_fields = [
+        "room_id",
+        "date",
+        "start_time",
+        "end_time",
+        "booked_by",
+    ]
 
-    if not all([
-        room_id, booking_date, start_time, end_time, booked_by
-    ]):
-        return jsonify({
-            "error": "Please provide room, date, start time, end time, and your name."
-        }), 400
+    if any(not data.get(field) for field in required_fields):
+        return {"error": "Please provide all booking details."}, 400
 
     try:
-        room_id = int(room_id)
-        parsed_date = date.fromisoformat(booking_date)
-        start = time.fromisoformat(start_time)
-        end = time.fromisoformat(end_time)
-
-        # Require the exact formats accepted by the API
-        if (
-            parsed_date.isoformat() != booking_date
-            or start.strftime("%H:%M") != start_time
-            or end.strftime("%H:%M") != end_time
-        ):
-            raise ValueError
+        room_id = int(data["room_id"])
+        booking_date = datetime.strptime(
+            data["date"], "%Y-%m-%d"
+        ).date()
+        start = datetime.strptime(
+            data["start_time"], "%H:%M"
+        ).time()
+        end = datetime.strptime(
+            data["end_time"], "%H:%M"
+        ).time()
 
     except (ValueError, TypeError):
-        return jsonify({
-            "error": "Use a valid room ID, date YYYY-MM-DD, and times HH:MM."
-        }), 400
+        return {
+            "error": "Invalid room ID, date, or time format."
+        }, 400
 
-    if booking_date < date.today().isoformat():
-        return jsonify({
-            "error": "You cannot book a past date."
-        }), 400
+    if booking_date < datetime.now().date():
+        return {
+            "error": "Please choose today or a future date."
+        }, 400
 
-    if start >= end:
-        return jsonify({
-            "error": "End time must be later than start time."
-        }), 400
+    if end <= start:
+        return {
+            "error": "End time must be after start time."
+        }, 400
 
-    room = next((r for r in ROOMS if r["id"] == room_id), None)
+    room = next(
+        (room for room in ROOMS if room["id"] == room_id),
+        None,
+    )
 
     if room is None:
-        return jsonify({"error": "Room not found."}), 404
+        return {"error": "Room not found."}, 404
 
-    with booking_lock:
-        bookings = load_bookings()
+    booked_by = str(data["booked_by"]).strip()
 
-        for booking in bookings:
-            if (
-                int(booking["room_id"]) == room_id
-                and booking["date"] == booking_date
-                and start_time < booking["end_time"]
-                and end_time > booking["start_time"]
-            ):
-                return jsonify({
-                    "error": "This room is already booked for that time. Please choose another slot."
-                }), 409
+    if not booked_by:
+        return {"error": "Please enter your name."}, 400
 
-        new_booking = {
-            "id": max(
-                (b["id"] for b in bookings), default=0
-            ) + 1,
-            "room_id": room_id,
-            "room_name": room["name"],
-            "date": booking_date,
-            "start_time": start_time,
-            "end_time": end_time,
-            "booked_by": booked_by
-        }
+    bookings = load_bookings()
 
-        bookings.append(new_booking)
-        save_bookings(bookings)
+    for booking in bookings:
+        if (
+            booking["room_id"] == room_id
+            and booking["date"] == data["date"]
+            and start.strftime("%H:%M") < booking["end_time"]
+            and end.strftime("%H:%M") > booking["start_time"]
+        ):
+            return {
+                "error": (
+                    "This room is already booked for that time. "
+                    "Please choose another slot."
+                )
+            }, 409
 
-    return jsonify({
-        "message": "Room booked successfully!",
-        "booking": new_booking
-    }), 201
+    new_booking = {
+        "id": max(
+            (booking["id"] for booking in bookings),
+            default=0,
+        ) + 1,
+        "room_id": room_id,
+        "room_name": room["name"],
+        "date": data["date"],
+        "start_time": start.strftime("%H:%M"),
+        "end_time": end.strftime("%H:%M"),
+        "booked_by": booked_by,
+    }
 
+    bookings.append(new_booking)
+    save_bookings(bookings)
 
-@app.route("/")
-def home():
-<<<<<<< HEAD
-    return render_template("index.html")
-    return render_template_string("""
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>CampusSpace</title>
-        <style>
-            * {
-                box-sizing: border-box;
-            }
-
-            body {
-                font-family: Arial, sans-serif;
-                background: #f1f5f9;
-                margin: 0;
-                color: #172554;
-            }
-
-            header {
-                background: #172554;
-                color: white;
-                padding: 28px 7%;
-            }
-
-            header h1 {
-                margin-top: 0;
-            }
-
-            main {
-                max-width: 1000px;
-                margin: 30px auto;
-                padding: 0 20px;
-            }
-
-            .rooms {
-                display: grid;
-                grid-template-columns:
-                    repeat(auto-fit, minmax(220px, 1fr));
-                gap: 18px;
-            }
-
-            .card {
-                background: white;
-                padding: 22px;
-                border-radius: 12px;
-                box-shadow: 0 3px 12px #17255410;
-            }
-
-            .available {
-                color: #15803d;
-                font-weight: bold;
-            }
-
-            .occupied {
-                color: #dc2626;
-                font-weight: bold;
-            }
-        </style>
-    </head>
-    <body>
-        <header>
-            <h1>CampusSpace</h1>
-            <p>Smart Campus Facility Availability</p>
-        </header>
-
-        <main>
-            <h2>Campus Facilities</h2>
-
-            <section class="rooms">
-                {% for room in rooms %}
-                <article class="card">
-                    <h3>{{ room.name }}</h3>
-                    <p>{{ room.type }}</p>
-                    <p>{{ room.building }}</p>
-                    <p>Capacity: {{ room.capacity }} people</p>
-                    <p class="{{ room.status|lower }}">
-                        {{ room.status }}
-                    </p>
-                </article>
-                {% endfor %}
-            </section>
-        </main>
-    </body>
-    </html>
-    """, rooms=ROOMS)
-=======
-    return render_template("index.html", rooms=ROOMS)
->>>>>>> origin/main
+    return {
+        "message": "Booking confirmed!",
+        "booking": new_booking,
+    }, 201
 
 
 if __name__ == "__main__":

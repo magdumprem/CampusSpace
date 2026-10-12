@@ -905,7 +905,7 @@ a {
     width: 100%;
     min-height: 44px;
     padding: 11px 13px;
-    border: 1px solid var(--border-color, #e1e5ed);
+border: 1px solid var(--border);
     border-radius: 10px;
     background: #fff;
     color: #253047;
@@ -970,19 +970,19 @@ a {
 #bookingsList > p {
     grid-column: 1 / -1;
     padding: 24px;
-    border: 1px dashed var(--border-color, #e1e5ed);
+    border: 1px dashed var(--border);
     border-radius: 14px;
     color: var(--text-secondary, #6b7280);
     text-align: center;
-    background: var(--card-background, #ffffff);
+    background: var(--surface);
 }
 
 #bookingsList .booking-item {
     min-width: 0;
     padding: 22px;
-    border: 1px solid var(--border-color, #e1e5ed);
+    border: 1px solid var(--border);
     border-radius: 16px;
-    background: var(--card-background, #ffffff);
+    background: var(--surface);
     box-shadow: 0 5px 18px rgba(32, 45, 75, 0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -1019,5 +1019,549 @@ a {
 
     #bookingsList .booking-item {
         padding: 18px;
+    }
+}
+
+/* =========================================
+   CampusSpace — Interactive UI Upgrade
+   ========================================= */
+
+/* Smoother scrolling and visual experience */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 24px;
+}
+
+body {
+    background:
+        radial-gradient(ellipse at 10% 0%, rgba(91, 91, 214, 0.07), transparent 32%),
+        #f7f8fc;
+}
+
+/* Navigation polish */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    transition: box-shadow 0.25s ease;
+}
+
+.navbar:hover {
+    box-shadow: 0 5px 24px rgba(36, 42, 78, 0.07);
+}
+
+.logo-icon {
+    box-shadow: 0 5px 14px rgba(91, 91, 214, 0.24);
+    transition: transform 0.3s ease;
+}
+
+.logo:hover .logo-icon {
+    transform: rotate(-8deg) scale(1.08);
+}
+
+.nav-links a {
+    position: relative;
+    padding: 10px 0;
+}
+
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 3px;
+    width: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--primary);
+    transition: width 0.25s ease;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    width: 100%;
+}
+
+/* Welcome section */
+.welcome-section {
+    animation: slideInUp 0.65s ease both;
+}
+
+.welcome-section h1 {
+    background: linear-gradient(110deg, #24243e, #5b5bd6 75%, #8d70dc);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.date-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.date-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 35px rgba(36, 42, 78, 0.10);
+}
+
+.date-icon {
+    transition: transform 0.3s ease;
+}
+
+.date-card:hover .date-icon {
+    transform: rotate(8deg) scale(1.08);
+}
+
+/* Statistics cards */
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.stat-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--primary);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(91, 91, 214, 0.28);
+    box-shadow: 0 16px 34px rgba(36, 42, 78, 0.10);
+}
+
+.stat-card:hover::before {
+    transform: scaleY(1);
+}
+
+.stat-icon {
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.12) rotate(-5deg);
+}
+
+.stat-card h2 {
+    transition: color 0.25s ease;
+}
+
+.stat-card:hover h2 {
+    color: var(--primary);
+}
+
+/* Search box and filters */
+.filter-panel {
+    box-shadow: 0 8px 28px rgba(36, 42, 78, 0.035);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.filter-panel:focus-within {
+    border-color: rgba(91, 91, 214, 0.35);
+    box-shadow: 0 10px 30px rgba(91, 91, 214, 0.08);
+}
+
+.search-box {
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.search-box:focus-within {
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(91, 91, 214, 0.09);
+}
+
+.filter-panel select {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-panel select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(91, 91, 214, 0.09);
+}
+
+/* Room cards */
+.space-card {
+    transform: translateY(0);
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.space-card:hover {
+    transform: translateY(-7px);
+    border-color: rgba(91, 91, 214, 0.30);
+    box-shadow: 0 18px 38px rgba(36, 42, 78, 0.12);
+}
+
+.space-visual {
+    transition: filter 0.3s ease;
+}
+
+.space-card:hover .space-visual {
+    filter: saturate(1.12);
+}
+
+.visual-icon {
+    transition: transform 0.35s ease;
+}
+
+.space-card:hover .visual-icon {
+    transform: scale(1.12) rotate(-4deg);
+}
+
+.availability {
+    transition: transform 0.25s ease;
+}
+
+.space-card:hover .availability {
+    transform: translateY(-2px);
+}
+
+.availability.available > span {
+    box-shadow: 0 0 0 3px rgba(34, 184, 121, 0.12);
+}
+
+.availability.occupied > span {
+    box-shadow: 0 0 0 3px rgba(223, 98, 106, 0.12);
+}
+
+/* Buttons */
+.view-button {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #e5e4ff;
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.view-button:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: 0 6px 15px rgba(91, 91, 214, 0.17);
+}
+
+.view-button:active {
+    transform: scale(0.98);
+}
+
+.view-button span {
+    transition: transform 0.25s ease;
+}
+
+.view-button:hover span {
+    transform: translateX(4px);
+}
+
+/* Room details and booking modals */
+.modal-overlay:not([hidden]) {
+    animation: overlayFade 0.22s ease both;
+}
+
+.modal-card {
+    animation: modalEnter 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.modal-close {
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.modal-close:hover {
+    background: #e7e7f8;
+    transform: rotate(90deg);
+}
+
+/* My Bookings */
+#bookingsList .booking-item {
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+#bookingsList .booking-item:hover {
+    transform: translateY(-5px);
+    border-color: rgba(91, 91, 214, 0.30);
+    box-shadow: 0 14px 30px rgba(36, 42, 78, 0.09);
+}
+
+#refreshBookings:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+/* Entrance animations */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes overlayFade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalEnter {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Responsive improvements */
+@media (max-width: 600px) {
+    .navbar {
+        position: relative;
+    }
+
+    .stat-card:hover,
+    .space-card:hover,
+    #bookingsList .booking-item:hover {
+        transform: translateY(-2px);
+    }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+/* Compact My Bookings section */
+/* ==========================================
+   CAMPUSSPACE — MY BOOKINGS LAYOUT
+========================================== */
+
+/* Main bookings section */
+#myBookings {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 24px 60px;
+    box-sizing: border-box;
+    scroll-margin-top: 90px;
+}
+
+/* Center the section heading */
+#myBookings .section-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+#myBookings .eyebrow {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+#myBookings .section-heading h2 {
+    margin: 0 0 10px;
+    font-size: clamp(28px, 3vw, 36px);
+    line-height: 1.2;
+    letter-spacing: -0.8px;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+#myBookings .section-description {
+    max-width: 600px;
+    margin: 0 auto;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.7;
+}
+
+/* Center the refresh button */
+#myBookings #refreshBookings {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    width: fit-content;
+    min-width: 190px;
+    min-height: 44px;
+    margin: 0 auto 30px;
+    padding: 12px 22px;
+
+    border: 1px solid #e1e1ff;
+    border-radius: 12px;
+    background: #f1f1ff;
+    color: var(--primary);
+
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#myBookings #refreshBookings:hover {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(91, 91, 214, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Booking cards container */
+#myBookings #bookingsList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 22px;
+
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+
+    text-align: left;
+}
+
+/* Individual booking cards */
+#myBookings #bookingsList .booking-item {
+    flex: 0 1 350px;
+    width: 100%;
+    max-width: 350px;
+    min-width: 0;
+    box-sizing: border-box;
+
+    padding: 24px;
+
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: var(--surface);
+
+    box-shadow: 0 6px 22px rgba(36, 42, 78, 0.06);
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* Card hover effect */
+#myBookings #bookingsList .booking-item:hover {
+    transform: translateY(-4px);
+    border-color: rgba(91, 91, 214, 0.45);
+    box-shadow: 0 12px 28px rgba(91, 91, 214, 0.11);
+}
+
+/* Room name */
+#myBookings #bookingsList .booking-item h3 {
+    margin: 0 0 16px;
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 750;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+/* Booking information */
+#myBookings #bookingsList .booking-item p {
+    margin: 12px 0 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+/* Empty or loading messages */
+#myBookings #bookingsList > p {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 24px;
+
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+/* Refresh button while loading */
+#myBookings #refreshBookings:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* Mobile layout */
+@media (max-width: 600px) {
+    #myBookings {
+        padding: 36px 16px 44px;
+    }
+
+    #myBookings #bookingsList {
+        gap: 16px;
+    }
+
+    #myBookings #bookingsList .booking-item {
+        flex-basis: 100%;
+        max-width: 380px;
+        padding: 20px;
+    }
+
+    #myBookings #refreshBookings {
+        margin-bottom: 24px;
+    }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+    #myBookings #bookingsList .booking-item,
+    #myBookings #refreshBookings {
+        transition: none;
+    }
+
+    #myBookings #bookingsList .booking-item:hover,
+    #myBookings #refreshBookings:hover {
+        transform: none;
     }
 }
