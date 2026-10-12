@@ -16,13 +16,9 @@
             --border: #e8ecf3;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body {
             margin: 0;
@@ -35,8 +31,6 @@
             display: flex;
             min-height: 100vh;
         }
-
-        /* SIDEBAR */
 
         .sidebar {
             width: 250px;
@@ -56,9 +50,7 @@
             letter-spacing: -1px;
         }
 
-        .logo span {
-            color: #a5b4fc;
-        }
+        .logo span { color: #a5b4fc; }
 
         .sidebar-label {
             font-size: 11px;
@@ -86,14 +78,28 @@
         }
 
         .sidebar-footer {
-            margin-top: 50px;
+            margin-top: 35px;
             padding: 15px 12px;
             border-top: 1px solid #34415c;
             color: #94a3b8;
             font-size: 12px;
         }
 
-        /* MAIN */
+        .logout-form { margin-top: 12px; }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #475569;
+            border-radius: 10px;
+            background: transparent;
+            color: #fecaca;
+            text-align: left;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover { background: #303d62; }
 
         .main {
             flex: 1;
@@ -122,6 +128,12 @@
             font-size: 14px;
         }
 
+        .topbar-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
         .refresh-btn {
             background: var(--primary);
             border: none;
@@ -130,21 +142,14 @@
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            transition: 0.2s;
         }
 
-        .refresh-btn:hover {
-            background: #4338ca;
-            transform: translateY(-2px);
-        }
+        .refresh-btn:hover { background: #4338ca; }
 
         .refresh-btn:disabled {
             opacity: 0.6;
             cursor: wait;
-            transform: none;
         }
-
-        /* STATS */
 
         .stats {
             display: grid;
@@ -159,12 +164,6 @@
             border-radius: 16px;
             border: 1px solid var(--border);
             box-shadow: 0 6px 24px rgba(20, 35, 70, 0.04);
-            transition: 0.25s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(20, 35, 70, 0.08);
         }
 
         .stat-icon {
@@ -190,8 +189,6 @@
             margin: 0;
             letter-spacing: -1px;
         }
-
-        /* PANELS */
 
         .panel {
             background: white;
@@ -248,13 +245,9 @@
             white-space: nowrap;
         }
 
-        tbody tr:hover {
-            background: #fafbff;
-        }
+        tbody tr:hover { background: #fafbff; }
 
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
+        tbody tr:last-child td { border-bottom: none; }
 
         .status-badge {
             display: inline-block;
@@ -277,39 +270,43 @@
             color: #991b1b;
         }
 
+        .cancel-btn {
+            border: 1px solid #fecaca;
+            background: #fff1f2;
+            color: #b91c1c;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .cancel-btn:hover {
+            background: #fee2e2;
+        }
+
+        .cancel-btn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
         .message {
             color: var(--muted);
             font-size: 14px;
+            margin-bottom: 10px;
         }
 
-        .message:empty {
-            display: none;
-        }
+        .message:empty { display: none; }
 
-        .message.error {
-            color: #b91c1c;
-        }
-
-        /* RESPONSIVE */
+        .message.error { color: #b91c1c; }
 
         @media (max-width: 900px) {
-            .sidebar {
-                width: 205px;
-            }
-
-            .main {
-                padding: 22px;
-            }
-
-            .stats {
-                gap: 12px;
-            }
+            .sidebar { width: 205px; }
+            .main { padding: 22px; }
+            .stats { gap: 12px; }
         }
 
         @media (max-width: 700px) {
-            .layout {
-                flex-direction: column;
-            }
+            .layout { flex-direction: column; }
 
             .sidebar {
                 width: 100%;
@@ -318,14 +315,9 @@
                 padding: 20px;
             }
 
-            .logo {
-                padding: 0 0 15px;
-            }
+            .logo { padding: 0 0 15px; }
 
-            .sidebar-label,
-            .sidebar-footer {
-                display: none;
-            }
+            .sidebar-label { display: none; }
 
             .navigation {
                 display: flex;
@@ -338,273 +330,231 @@
                 margin-bottom: 0;
             }
 
-            .main {
-                padding: 18px;
-            }
+            .sidebar-footer { margin-top: 15px; }
 
-            .stats {
-                grid-template-columns: 1fr;
-            }
+            .logout-form { max-width: 180px; }
 
-            .topbar h1 {
-                font-size: 24px;
-            }
+            .main { padding: 18px; }
 
-            .panel {
-                padding: 18px;
-            }
+            .stats { grid-template-columns: 1fr; }
+
+            .topbar h1 { font-size: 24px; }
+
+            .panel { padding: 18px; }
         }
     </style>
 </head>
 
 <body>
-    <div class="layout">
+<div class="layout">
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-            <div class="logo">Campus<span>Space</span></div>
+    <aside class="sidebar">
+        <div class="logo">Campus<span>Space</span></div>
 
-            <div class="sidebar-label">Administration</div>
+        <div class="sidebar-label">Administration</div>
 
-            <nav class="navigation" aria-label="Admin navigation">
-                <a href="#dashboard" class="nav-link active">
-                    ◈ &nbsp; Dashboard
-                </a>
+        <nav class="navigation" aria-label="Admin navigation">
+            <a href="#dashboard" class="nav-link active">◈ &nbsp; Dashboard</a>
+            <a href="#rooms-section" class="nav-link">▦ &nbsp; Room Overview</a>
+            <a href="#bookings-section" class="nav-link">▤ &nbsp; Bookings</a>
+            <a href="/" class="nav-link">↗ &nbsp; Student Portal</a>
+        </nav>
 
-                <a href="#rooms-section" class="nav-link">
-                    ▦ &nbsp; Room Overview
-                </a>
+        <div class="sidebar-footer">
+            CampusSpace Admin Panel<br>
+            Hackathon Prototype
 
-                <a href="#bookings-section" class="nav-link">
-                    ▤ &nbsp; Bookings
-                </a>
+            <form
+                class="logout-form"
+                action="{{ url_for('admin_logout') }}"
+                method="POST"
+            >
+                <button class="logout-btn" type="submit">↪ &nbsp; Logout</button>
+            </form>
+        </div>
+    </aside>
 
-                <a href="/" class="nav-link">
-                    ↗ &nbsp; Student Portal
-                </a>
-            </nav>
-
-            <div class="sidebar-footer">
-                CampusSpace Admin Panel<br>
-                Hackathon Prototype
+    <main class="main" id="dashboard">
+        <div class="topbar">
+            <div>
+                <h1>Dashboard Overview</h1>
+                <p>Monitor campus spaces and booking activity.</p>
             </div>
-        </aside>
 
-        <!-- MAIN CONTENT -->
-        <main class="main" id="dashboard">
-
-            <div class="topbar">
-                <div>
-                    <h1>Dashboard Overview</h1>
-                    <p>
-                        Monitor campus spaces and booking activity.
-                    </p>
-                </div>
-
-                <button
-                    class="refresh-btn"
-                    id="refreshBtn"
-                    type="button"
-                >
+            <div class="topbar-actions">
+                <button class="refresh-btn" id="refreshBtn" type="button">
                     ↻ Refresh Data
                 </button>
             </div>
+        </div>
 
-            <!-- STATISTICS -->
-            <section class="stats" aria-label="Dashboard statistics">
+        <section class="stats" aria-label="Dashboard statistics">
+            <div class="stat-card">
+                <div class="stat-icon">🏫</div>
+                <p>Total Rooms</p>
+                <h2 id="totalRooms">—</h2>
+            </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon">🏫</div>
-                    <p>Total Rooms</p>
-                    <h2 id="totalRooms">—</h2>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <p>Total Bookings</p>
+                <h2 id="totalBookings">—</h2>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <p>Available Rooms</p>
+                <h2 id="availableRooms">—</h2>
+            </div>
+        </section>
+
+        <section class="panel" id="rooms-section">
+            <div class="panel-header">
+                <div>
+                    <h2>Room Overview</h2>
+                    <div class="panel-subtitle">Campus facility inventory</div>
                 </div>
+            </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon">📅</div>
-                    <p>Total Bookings</p>
-                    <h2 id="totalBookings">—</h2>
+            <div id="roomsMessage" class="message">Loading rooms...</div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Room Name</th>
+                        <th>Type</th>
+                        <th>Capacity</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody id="roomsTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel" id="bookings-section">
+            <div class="panel-header">
+                <div>
+                    <h2>Booking Overview</h2>
+                    <div class="panel-subtitle">Student room reservations</div>
                 </div>
+            </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon">✅</div>
-                    <p>Available Rooms</p>
-                    <h2 id="availableRooms">—</h2>
-                </div>
+            <div id="bookingsMessage" class="message">Loading bookings...</div>
 
-            </section>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Room</th>
+                        <th>Booked By</th>
+                        <th>Date</th>
+                        <th>Time Slot</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody id="bookingsTable"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
 
-            <!-- ROOM TABLE -->
-            <section class="panel" id="rooms-section">
-                <div class="panel-header">
-                    <div>
-                        <h2>Room Overview</h2>
-                        <div class="panel-subtitle">
-                            Campus facility inventory
-                        </div>
-                    </div>
-                </div>
+<script>
+    const refreshButton = document.getElementById("refreshBtn");
+    const roomsMessage = document.getElementById("roomsMessage");
+    const bookingsMessage = document.getElementById("bookingsMessage");
 
-                <div id="roomsMessage" class="message">
-                    Loading rooms...
-                </div>
+    function addCell(row, value) {
+        const cell = document.createElement("td");
+        cell.textContent = value ?? "—";
+        row.appendChild(cell);
+    }
 
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Room Name</th>
-                                <th>Type</th>
-                                <th>Capacity</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="roomsTable"></tbody>
-                    </table>
-                </div>
-            </section>
+    function showStatus(row, status) {
+        const cell = document.createElement("td");
+        const badge = document.createElement("span");
+        const text = String(status ?? "Unknown");
+        const normalized = text.toLowerCase();
 
-            <!-- BOOKINGS TABLE -->
-            <section class="panel" id="bookings-section">
-                <div class="panel-header">
-                    <div>
-                        <h2>Booking Overview</h2>
-                        <div class="panel-subtitle">
-                            Student room reservations
-                        </div>
-                    </div>
-                </div>
+        badge.className = "status-badge";
 
-                <div id="bookingsMessage" class="message">
-                    Loading bookings...
-                </div>
-
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Booking ID</th>
-                                <th>Room</th>
-                                <th>Booked By</th>
-                                <th>Date</th>
-                                <th>Time Slot</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bookingsTable"></tbody>
-                    </table>
-                </div>
-            </section>
-
-        </main>
-    </div>
-
-    <script>
-        const refreshButton =
-            document.getElementById("refreshBtn");
-
-        function addCell(row, value) {
-            const cell = document.createElement("td");
-            cell.textContent = value ?? "—";
-            row.appendChild(cell);
+        if (["available", "occupied", "unavailable"].includes(normalized)) {
+            badge.classList.add(normalized);
         }
 
-        function showStatus(row, status) {
-            const cell = document.createElement("td");
-            const badge = document.createElement("span");
+        badge.textContent = text;
+        cell.appendChild(badge);
+        row.appendChild(cell);
+    }
 
-            const statusText = String(status ?? "Unknown");
-            const normalizedStatus = statusText.toLowerCase();
+    async function loadDashboard() {
+        refreshButton.disabled = true;
+        refreshButton.textContent = "Refreshing...";
 
-            badge.className = "status-badge";
+        roomsMessage.classList.remove("error");
+        bookingsMessage.classList.remove("error");
+        roomsMessage.textContent = "Loading rooms...";
+        bookingsMessage.textContent = "Loading bookings...";
 
-            if (
-                normalizedStatus === "available" ||
-                normalizedStatus === "occupied" ||
-                normalizedStatus === "unavailable"
-            ) {
-                badge.classList.add(normalizedStatus);
+        try {
+            const [roomsResponse, bookingsResponse] = await Promise.all([
+                fetch("/api/rooms"),
+                fetch("/api/bookings")
+            ]);
+
+            if (bookingsResponse.redirected) {
+                window.location.href = "/admin/login";
+                return;
             }
 
-            badge.textContent = statusText;
-            cell.appendChild(badge);
-            row.appendChild(cell);
-        }
+            if (!roomsResponse.ok || !bookingsResponse.ok) {
+                throw new Error("Unable to load dashboard data.");
+            }
 
-        async function loadDashboard() {
-            refreshButton.disabled = true;
-            refreshButton.textContent = "Refreshing...";
+            const roomsData = await roomsResponse.json();
+            const bookingsData = await bookingsResponse.json();
 
-            const roomsMessage =
-                document.getElementById("roomsMessage");
+            const rooms = roomsData.rooms;
+            const bookings = bookingsData.bookings;
 
-            const bookingsMessage =
-                document.getElementById("bookingsMessage");
+            if (!Array.isArray(rooms) || !Array.isArray(bookings)) {
+                throw new Error("Unexpected API response.");
+            }
 
-            roomsMessage.classList.remove("error");
-            bookingsMessage.classList.remove("error");
+            document.getElementById("totalRooms").textContent = rooms.length;
+            document.getElementById("totalBookings").textContent = bookings.length;
 
-            roomsMessage.textContent = "Loading rooms...";
-            bookingsMessage.textContent = "Loading bookings...";
+            document.getElementById("availableRooms").textContent =
+                rooms.filter(room =>
+                    String(room.status).toLowerCase() === "available"
+                ).length;
 
-            try {
-                const [roomsResponse, bookingsResponse] =
-                    await Promise.all([
-                        fetch("/api/rooms"),
-                        fetch("/api/bookings")
-                    ]);
+            const roomsTable = document.getElementById("roomsTable");
+            const bookingsTable = document.getElementById("bookingsTable");
 
-                if (!roomsResponse.ok || !bookingsResponse.ok) {
-                    throw new Error(
-                        "Unable to load dashboard data."
-                    );
-                }
+            roomsTable.replaceChildren();
+            bookingsTable.replaceChildren();
 
-                const roomsData = await roomsResponse.json();
-                const bookingsData = await bookingsResponse.json();
+            rooms.forEach(room => {
+                const row = document.createElement("tr");
+                addCell(row, room.name);
+                addCell(row, room.type);
+                addCell(row, room.capacity);
+                showStatus(row, room.status);
+                roomsTable.appendChild(row);
+            });
 
-                const rooms = roomsData.rooms;
-                const bookings = bookingsData.bookings;
-
-                if (
-                    !Array.isArray(rooms) ||
-                    !Array.isArray(bookings)
-                ) {
-                    throw new Error("Unexpected API response.");
-                }
-
-                document.getElementById("totalRooms").textContent =
-                    rooms.length;
-
-                document.getElementById("totalBookings").textContent =
-                    bookings.length;
-
-                document.getElementById("availableRooms").textContent =
-                    rooms.filter(room =>
-                        String(room.status).toLowerCase() ===
-                        "available"
-                    ).length;
-
-                const roomsTable =
-                    document.getElementById("roomsTable");
-
-                const bookingsTable =
-                    document.getElementById("bookingsTable");
-
-                roomsTable.replaceChildren();
-                bookingsTable.replaceChildren();
-
-                // Display rooms
-                rooms.forEach(room => {
-                    const row = document.createElement("tr");
-
-                    addCell(row, room.name);
-                    addCell(row, room.type);
-                    addCell(row, room.capacity);
-                    showStatus(row, room.status);
-
-                    roomsTable.appendChild(row);
-                });
-
-                // Display bookings
+            if (bookings.length === 0) {
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+                cell.colSpan = 6;
+                cell.textContent = "No bookings found.";
+                row.appendChild(cell);
+                bookingsTable.appendChild(row);
+            } else {
                 bookings.forEach(booking => {
                     const row = document.createElement("tr");
 
@@ -612,42 +562,106 @@
                     addCell(row, booking.room_name);
                     addCell(row, booking.booked_by);
                     addCell(row, booking.date);
-
                     addCell(
                         row,
-                        `${booking.start_time} - ${booking.end_time}`
+                        `${booking.start_time ?? "—"} - ${booking.end_time ?? "—"}`
                     );
 
+                    const actionCell = document.createElement("td");
+                    const cancelButton = document.createElement("button");
+
+                    cancelButton.type = "button";
+                    cancelButton.className = "cancel-btn";
+                    cancelButton.textContent = "Cancel";
+                    cancelButton.setAttribute(
+                        "aria-label",
+                        `Cancel booking ${booking.id}`
+                    );
+
+                    cancelButton.addEventListener("click", () => {
+                        cancelBooking(booking.id, cancelButton);
+                    });
+
+                    actionCell.appendChild(cancelButton);
+                    row.appendChild(actionCell);
                     bookingsTable.appendChild(row);
                 });
-
-                roomsMessage.textContent =
-                    rooms.length ? "" : "No rooms found.";
-
-                bookingsMessage.textContent =
-                    bookings.length ? "" : "No bookings found.";
-
-            } catch (error) {
-                console.error(error);
-
-                roomsMessage.textContent =
-                    "Could not load rooms. Please try again.";
-
-                bookingsMessage.textContent =
-                    "Could not load bookings. Please try again.";
-
-                roomsMessage.classList.add("error");
-                bookingsMessage.classList.add("error");
-
-            } finally {
-                refreshButton.disabled = false;
-                refreshButton.textContent = "↻ Refresh Data";
             }
+
+            roomsMessage.textContent = rooms.length ? "" : "No rooms found.";
+            bookingsMessage.textContent = bookings.length
+                ? ""
+                : "No bookings found.";
+
+        } catch (error) {
+            console.error("Dashboard loading error:", error);
+
+            roomsMessage.textContent =
+                "Could not load rooms. Please try again.";
+            bookingsMessage.textContent =
+                "Could not load bookings. Please try again.";
+
+            roomsMessage.classList.add("error");
+            bookingsMessage.classList.add("error");
+
+        } finally {
+            refreshButton.disabled = false;
+            refreshButton.textContent = "↻ Refresh Data";
         }
+    }
 
-        refreshButton.addEventListener("click", loadDashboard);
+    async function cancelBooking(bookingId, button) {
+        const confirmed = confirm(
+            `Are you sure you want to cancel booking #${bookingId}?`
+        );
 
-        loadDashboard();
-    </script>
+        if (!confirmed) return;
+
+        button.disabled = true;
+        button.textContent = "Cancelling...";
+
+        try {
+            const response = await fetch(
+                `/api/bookings/${encodeURIComponent(bookingId)}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+            const result = await response.json().catch(() => ({}));
+
+            if (response.redirected) {
+                window.location.href = "/admin/login";
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    result.error || "Could not cancel the booking."
+                );
+            }
+
+            bookingsMessage.classList.remove("error");
+            bookingsMessage.textContent = "Booking cancelled successfully.";
+
+            await loadDashboard();
+
+            if (!bookingsMessage.classList.contains("error")) {
+                bookingsMessage.textContent = "Booking cancelled successfully.";
+            }
+
+        } catch (error) {
+            console.error("Booking cancellation error:", error);
+            bookingsMessage.textContent = error.message;
+            bookingsMessage.classList.add("error");
+
+            button.disabled = false;
+            button.textContent = "Cancel";
+        }
+    }
+
+    refreshButton.addEventListener("click", loadDashboard);
+    loadDashboard();
+</script>
 </body>
 </html>
