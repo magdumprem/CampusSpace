@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration | CampusSpace</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f3f4f8;
+            color: #1f2937;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 430px;
+            padding: 32px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            box-shadow: 0 12px 35px rgba(31, 41, 55, 0.08);
+        }
+
+        .brand {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .brand-icon {
+            display: inline-flex;
+            width: 54px;
+            height: 54px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            background: #4f46e5;
+            color: #fff;
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .brand h1 {
+            margin: 14px 0 6px;
+            font-size: 26px;
+        }
+
+        .brand p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            min-height: 45px;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: 2px solid #a5b4fc;
+            border-color: #4f46e5;
+        }
+
+        button {
+            width: 100%;
+            min-height: 47px;
+            margin-top: 7px;
+            border: none;
+            border-radius: 9px;
+            background: #4f46e5;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #4338ca;
+        }
+
+        .auth-link {
+            margin-top: 21px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        a {
+            color: #4f46e5;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            padding: 11px;
+            border-radius: 8px;
+            background: #fef2f2;
+            color: #b91c1c;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 24px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="auth-card">
+        <header class="brand">
+            <div class="brand-icon" aria-hidden="true">C</div>
+            <h1>Create Account</h1>
+            <p>Join CampusSpace as a student</p>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="message" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="field">
+                <label for="full_name">Full Name</label>
+                <input
+                    type="text"
+                    id="full_name"
+                    name="full_name"
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                    maxlength="100"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Choose a username"
+                    autocomplete="username"
+                    minlength="3"
+                    maxlength="30"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="email">College Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    maxlength="254"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Create a password"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="confirm_password">Confirm Password</label>
+                <input
+                    type="password"
+                    id="confirm_password"
+                    name="confirm_password"
+                    placeholder="Enter your password again"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                >
+            </div>
+
+            <button type="submit">Create Account →</button>
+        </form>
+
+        <div class="auth-link">
+            Already registered?
+            <a href="{{ url_for('login') }}">Log in</a>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | CampusSpace</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f3f4f8;
+            color: #1f2937;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 410px;
+            padding: 32px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            box-shadow: 0 12px 35px rgba(31, 41, 55, 0.08);
+        }
+
+        .brand {
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .brand-icon {
+            display: inline-flex;
+            width: 54px;
+            height: 54px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            background: #4f46e5;
+            color: white;
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .brand h1 {
+            margin: 14px 0 6px;
+            font-size: 27px;
+        }
+
+        .brand p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            min-height: 46px;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            background: white;
+            font-size: 15px;
+        }
+
+        input:focus, select:focus {
+            outline: 2px solid #a5b4fc;
+            border-color: #4f46e5;
+        }
+
+        button {
+            width: 100%;
+            min-height: 47px;
+            margin-top: 6px;
+            border: none;
+            border-radius: 9px;
+            background: #4f46e5;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #4338ca;
+        }
+
+        .register-link {
+            margin-top: 22px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        a {
+            color: #4f46e5;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            padding: 11px;
+            border-radius: 8px;
+            background: #fef2f2;
+            color: #b91c1c;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 24px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="auth-card">
+        <header class="brand">
+            <div class="brand-icon" aria-hidden="true">C</div>
+            <h1>CampusSpace</h1>
+            <p>Sign in to continue</p>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="message" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="field">
+                <label for="role">Login as</label>
+                <select id="role" name="role" required>
+                    <option value="student">Student</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your username"
+                    autocomplete="username"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <button type="submit">Login →</button>
+        </form>
+
+        <div class="register-link">
+            New student?
+            <a href="{{ url_for('register') }}">Create an account</a>
+        </div>
+    </main>
+</body>
+</html>
