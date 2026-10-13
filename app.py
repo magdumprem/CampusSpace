@@ -4,7 +4,7 @@ import os
 import hmac
 from datetime import datetime
 from functools import wraps
-
+from werkzeug.security import check_password_hash
 from flask import (
     Flask,
     render_template,
@@ -56,6 +56,66 @@ def save_bookings(bookings):
         json.dump(bookings, file, indent=2)
 
 
+# -------------------- STUDENT AUTHENTICATION --------------------
+
+@app.route("/api/student/login", methods=["POST"])
+def student_login():
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return {"error": "Please provide login details."}, 400
+
+    username = str(data.get("username", "")).strip()
+    password = data.get("password", "")
+
+    if not isinstance(password, str):
+        return {"error": "Invalid password format."}, 400
+
+    expected_username = os.environ.get("STUDENT_USERNAME", "")
+    password_hash = os.environ.get("STUDENT_PASSWORD_HASH", "")
+
+    if not expected_username or not password_hash:
+        return {
+            "error": "Student authentication is not configured."
+        }, 503
+
+    username_matches = hmac.compare_digest(
+        username,
+        expected_username
+    )
+
+    password_matches = check_password_hash(
+        password_hash,
+        password
+    )
+
+    if username_matches and password_matches:
+        session.clear()
+        session["student_logged_in"] = True
+        session["student_username"] = username
+
+        return {
+            "message": "Student login successful!",
+            "role": "student",
+            "username": username
+        }, 200
+
+    return {
+        "error": "Invalid username or password."
+    }, 401
+# -------------------- STUDENT ACCESS PROTECTION --------------------
+
+def student_required(view_function):
+    @wraps(view_function)
+    def wrapped_view(*args, **kwargs):
+        if not session.get("student_logged_in"):
+            return {
+                "error": "Student login required."
+            }, 401
+
+        return view_function(*args, **kwargs)
+
+    return wrapped_view
 # -------------------- ADMIN AUTHENTICATION --------------------
 
 def admin_required(view_function):
@@ -67,15 +127,100 @@ def admin_required(view_function):
         return view_function(*args, **kwargs)
 
     return wrapped_view
+# -------------------- COMMON LOGIN PAGE --------------------
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        role = request.form.get("role", "").strip().lower()
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
 
+        if role == "student":
+            expected_username = os.environ.get("STUDENT_USERNAME", "")
+            password_hash = os.environ.get("STUDENT_PASSWORD_HASH", "")
+
+            if not expected_username or not password_hash:
+                flash("Student authentication is not configured.", "error")
+                return render_template("login.html"), 503
+
+            username_matches = hmac.compare_digest(
+                username, expected_username
+            )
+            password_matches = check_password_hash(
+                password_hash, password
+            )
+
+            if username_matches and password_matches:
+                session.clear()
+                session["student_logged_in"] = True
+                session["student_username"] = username
+                return redirect(url_for("home"))
+
+        elif role == "admin":
+            expected_username = os.environ.get("ADMIN_USERNAME", "")
+            expected_password = os.environ.get("ADMIN_PASSWORD", "")
+
+            if not expected_username or not expected_password:
+                flash("Admin authentication is not configured.", "error")
+                return render_template("login.html"), 503
+
+            if (
+                hmac.compare_digest(username, expected_username)
+                and hmac.compare_digest(password, expected_password)
+            ):
+                session.clear()
+                session["admin_logged_in"] = True
+                return redirect(url_for("admin"))
+
+        else:
+            flash("Please select a valid role.", "error")
+            return render_template("login.html"), 400
+
+        flash("Invalid username or password.", "error")
+        return render_template("login.html"), 401
+
+    if session.get("admin_logged_in"):
+        return redirect(url_for("admin"))
+
+    if session.get("student_logged_in"):
+        return redirect(url_for("home"))
+
+    return render_template("login.html")
+# -------------------- STUDENT REGISTRATION PAGE --------------------
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        flash(
+            "Student registration is not available yet.",
+            "error"
+        )
+        return redirect(url_for("register"))
+
+    return render_template("register.html")
 # -------------------- STUDENT HOME PAGE --------------------
 
 @app.route("/")
 def home():
+    if not session.get("student_logged_in"):
+        if session.get("admin_logged_in"):
+            return redirect(url_for("admin"))
+
+        return redirect(url_for("login"))
+
     return render_template("index.html", rooms=ROOMS)
 
+# -------------------- STUDENT LOGOUT --------------------
 
+@app.route("/api/student/logout", methods=["POST"])
+@student_required
+def student_logout():
+    session.clear()
+
+    return {
+        "message": "Student logged out successfully."
+    }, 200
 # -------------------- ADMIN LOGIN --------------------
 
 @app.route("/admin/login", methods=["GET", "POST"])
@@ -182,7 +327,20 @@ def get_rooms():
 
     return {"rooms": filtered_rooms}
 
+# -------------------- MY BOOKINGS: STUDENTS --------------------
 
+@app.route("/api/student/bookings", methods=["GET"])
+@student_required
+def get_student_bookings():
+    username = session["student_username"]
+
+    student_bookings = [
+        booking
+        for booking in load_bookings()
+        if booking.get("booked_by") == username
+    ]
+
+    return {"bookings": student_bookings}, 200
 # -------------------- BOOKINGS API: ADMIN ONLY --------------------
 
 @app.route("/api/bookings", methods=["GET"])
@@ -219,6 +377,7 @@ def delete_booking(booking_id):
 # -------------------- CREATE BOOKING: STUDENTS --------------------
 
 @app.route("/api/bookings", methods=["POST"])
+@student_required
 def create_booking():
     data = request.get_json(silent=True) or {}
 
@@ -227,7 +386,7 @@ def create_booking():
         "date",
         "start_time",
         "end_time",
-        "booked_by",
+        
     ]
 
     if any(not data.get(field) for field in required_fields):
@@ -273,13 +432,9 @@ def create_booking():
     if room is None:
         return {"error": "Room not found."}, 404
 
-    booked_by = str(data["booked_by"]).strip()
+    booked_by = session["student_username"]
 
-    if not booked_by:
-        return {
-            "error": "Please enter your name."
-        }, 400
-
+    
     bookings = load_bookings()
 
     for booking in bookings:
