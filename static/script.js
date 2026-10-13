@@ -344,7 +344,7 @@ document.addEventListener("DOMContentLoaded", function () {
         refreshBookings.disabled = true;
 
         try {
-            const response = await fetch("/api/bookings");
+           const response = await fetch("/api/student/bookings");
             const data = await response.json();
 
             if (!response.ok) {
